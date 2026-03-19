@@ -595,24 +595,54 @@
       </div>
     </div>
 
-    <!-- Timer — tap the circle to start -->
+    <!-- Timer — rotary dial sets goal, tap ring to start -->
     <div class="card" style="display:flex;flex-direction:column;align-items:center;padding:22px 16px;gap:14px;">
-      <div class="donut-outer">
-        <div class="donut-wrap" onclick="toggleTimer()" title="Tap to start / pause">
-          <svg viewBox="0 0 120 120">
-            <circle class="donut-bg" cx="60" cy="60" r="54"/>
-            <circle class="donut-track" cx="60" cy="60" r="48"/>
-            <circle class="donut-prog" id="timer-ring" cx="60" cy="60" r="48"
-              stroke-dasharray="301.6" stroke-dashoffset="301.6"/>
+
+      <!-- Rotary dial goal setter -->
+      <div style="text-align:center;margin-bottom:2px;">
+        <div style="font-size:.65rem;font-weight:800;color:var(--blue-dark);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Drag to set goal</div>
+        <div id="rotary-wrap" style="position:relative;width:170px;height:170px;margin:0 auto;cursor:grab;touch-action:none;" title="Drag to set goal">
+          <!-- Outer ring (goal setter) -->
+          <svg id="rotary-svg" viewBox="0 0 170 170" style="width:170px;height:170px;position:absolute;top:0;left:0;">
+            <!-- Track -->
+            <circle cx="85" cy="85" r="78" fill="none" stroke="#ddeef7" stroke-width="10"/>
+            <!-- Goal arc -->
+            <circle id="goal-arc" cx="85" cy="85" r="78" fill="none" stroke="#b8dff7" stroke-width="10"
+              stroke-linecap="round" stroke-dasharray="490.1" stroke-dashoffset="245"
+              transform="rotate(-90 85 85)"/>
+            <!-- Tick marks every 15min -->
+            <g id="tick-marks"></g>
+            <!-- Drag handle -->
+            <circle id="rotary-handle" cx="85" cy="7" r="8" fill="var(--navy)" stroke="white" stroke-width="2.5"/>
           </svg>
-          <div class="donut-center">
-            <div class="mode" id="timer-mode">WORK</div>
-            <div class="session" id="timer-lbl">TAP TO START</div>
-            <div class="tdisp" id="timer-display">00:00:00</div>
+
+          <!-- Inner donut (progress) -->
+          <div style="position:absolute;inset:16px;border-radius:50%;overflow:hidden;">
+            <div class="donut-outer" style="width:100%;height:100%;">
+              <div class="donut-wrap" id="donut-tap" onclick="toggleTimer()" title="Tap to start / pause"
+                style="width:100%;height:100%;border-radius:50%;">
+                <svg viewBox="0 0 120 120" style="width:100%;height:100%;">
+                  <circle class="donut-bg" cx="60" cy="60" r="54"/>
+                  <circle class="donut-track" cx="60" cy="60" r="48"/>
+                  <circle class="donut-prog" id="timer-ring" cx="60" cy="60" r="48"
+                    stroke-dasharray="301.6" stroke-dashoffset="301.6"/>
+                </svg>
+                <div class="donut-center">
+                  <div class="mode" id="timer-mode">WORK</div>
+                  <div class="session" id="timer-lbl" style="font-size:.6rem;">TAP TO START</div>
+                  <div class="tdisp" id="timer-display">00:00:00</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="donut-hint" id="timer-hint">Tap circle to begin session</div>
+        <div style="font-size:.72rem;font-weight:800;color:var(--blue-dark);margin-top:8px;">
+          Goal: <span id="goal-display">30 min</span>
+        </div>
       </div>
+
+      <div class="donut-hint" id="timer-hint">Tap circle to begin · drag ring to set goal</div>
+
       <div style="display:flex;gap:20px;width:100%;justify-content:center;">
         <div class="timer-stat" style="text-align:center;">
           <div class="ts-label">Goal</div>
@@ -624,12 +654,6 @@
         </div>
       </div>
       <button class="timer-btn reset" onclick="resetTimer()">↺ Reset</button>
-      <div style="width:100%;text-align:center;">
-        <label style="font-size:.75rem;font-weight:800;color:var(--blue-dark);">GOAL (min)</label><br>
-        <input type="number" id="goal-input" value="30" min="1" max="120"
-          style="width:80px;padding:5px 8px;border-radius:8px;border:2px solid var(--sky);font-family:Nunito;font-weight:800;font-size:1rem;text-align:center;margin-top:4px;"
-          onchange="setGoal(this.value)">
-      </div>
     </div>
   </div>
 </div>
@@ -799,7 +823,10 @@ function showPage(name) {
   const tabs = [...document.querySelectorAll('.topbar-tab')];
   if (tabs[TAB_IDX[name]]) tabs[TAB_IDX[name]].classList.add('active');
   const bn = document.getElementById('bnav-'+name); if (bn) bn.classList.add('active');
-  if (name === 'explore' && !window._mapReady) initMap();
+  if (name === 'explore') {
+    if (!window._mapReady) initMap();
+    else if (window._leafletMap) setTimeout(()=>window._leafletMap.invalidateSize(),50);
+  }
   if (name === 'stats') { buildCalendar(); buildWeekly(); buildTopSpots(); buildLeaderboard(); buildAchievements(); }
 }
 function showToast(msg) {
@@ -903,7 +930,8 @@ function makeMarker(loc) {
 
 function initMap() {
   window._mapReady = true;
-  const map = L.map('leaflet-map').setView([42.7284,-73.6918], 14);
+  const map = L.map('leaflet-map', {zoomControl:true}).setView([42.7284,-73.6918], 14);
+  window._leafletMap = map;
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>', maxZoom:19
   }).addTo(map);
@@ -967,6 +995,9 @@ function setFilter(f, el) {
 }
 function filterLocs(q) { _query=q.toLowerCase(); buildLocList(); }
 buildLocList();
+
+// Init map immediately — explore is the default visible page
+document.addEventListener('DOMContentLoaded', () => { if(!window._mapReady) initMap(); });
 
 // ── SPACES ───────────────────────────────────────
 let _curLocId = 'troy-library', _curFloor = 0;
@@ -1087,20 +1118,74 @@ function renderRatings(locId) {
 renderRatings('troy-library');
 
 // ── CHARTS ───────────────────────────────────────
-const popularData=[[12,18,22,20,24,26,28,32,42,50,55,48,38,30,22],[8,10,14,18,22,28,35,42,48,52,45,38,30,20,15],[15,20,28,32,38,40,36,30,24,20,18,22,28,34,40],[5,8,12,16,22,30,40,48,52,48,40,32,24,18,10]];
+// Bell-curve generator: peaks at `peak` slot (0-14), width controls spread
+function bellCurve(peak, width, amplitude, slots=15) {
+  return Array.from({length:slots}, (_,i) => {
+    const v = amplitude * Math.exp(-0.5 * Math.pow((i - peak) / width, 2));
+    return Math.max(2, Math.round(v));
+  });
+}
+// Mix two bell curves for more realistic shapes
+function mixCurves(c1, c2) {
+  return c1.map((v,i) => Math.max(2, Math.round(Math.max(v, c2[i]) * 0.85 + Math.min(v, c2[i]) * 0.15)));
+}
+
+// Each day: distinct bell curve character
+// Slots 0–14 = 9am to 11pm
+const popularByDay = {
+  0: bellCurve(5, 2.8, 58),   // Sun — gentle midday hump around 2pm
+  1: bellCurve(7, 3.2, 92),   // Mon — big afternoon peak ~4pm
+  2: (() => { const a=bellCurve(3,2.0,55), b=bellCurve(8,2.5,78); return a.map((v,i)=>Math.max(v,b[i])); })(), // Tue — double hump noon + evening
+  3: bellCurve(8, 3.5, 100),  // Wed — widest peak, busiest day, evening
+  4: bellCurve(7, 3.0, 88),   // Thu — similar to Mon, slightly lower
+  5: bellCurve(4, 2.5, 72),   // Fri — peaks earlier ~1pm, trails off
+  6: bellCurve(6, 3.8, 48),   // Sat — flat, low, midday spread
+};
+
 let _room=0, _dayIdx=0;
 const DAYS=['Today','Mon','Tue','Wed','Thu','Fri','Sat'];
 
-function makeChart(id,data,color,hi){
-  const el=document.getElementById(id); if(!el) return;
-  el.innerHTML=''; const mx=Math.max(...data);
-  data.forEach((v,i)=>{const b=document.createElement('div');b.className='bar'+(i===hi?' active-bar':'');b.style.height=(v/mx*100)+'%';b.style.background=i===hi?'#1e5f8e':color;b.title=v+'%';b.onclick=()=>showToast(v+'% at this hour');el.appendChild(b);});
-}
 function renderCharts(){
-  const h=new Date().getHours(); const hi=Math.min(h-9,14);
-  const ri=Math.min(_room,popularData.length-1);
-  makeChart('popular-chart',popularData[ri],'#4a9fd4',hi);
+  const now = new Date();
+  const todayDow = now.getDay(); // 0=Sun
+  // _dayIdx 0=Today, 1=Mon(1), 2=Tue(2)... 6=Sat(6), 7=Sun(0)
+  let viewDow;
+  if (_dayIdx === 0) viewDow = todayDow;
+  else viewDow = _dayIdx % 7; // 1=Mon, 2=Tue, ... 6=Sat, 7→0=Sun
+
+  const data = popularByDay[viewDow] || popularByDay[0];
+  const isToday = _dayIdx === 0;
+  const currentSlot = now.getHours() - 9; // slot 0=9am
+
+  const el = document.getElementById('popular-chart');
+  if (!el) return;
+  el.innerHTML = '';
+  const mx = Math.max(...data);
+
+  data.forEach((v, i) => {
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'flex:1;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-end;height:100%;position:relative;gap:0;';
+
+    const bar = document.createElement('div');
+    bar.style.cssText = `height:${(v/mx*100)}%;background:#4a9fd4;border-radius:4px 4px 0 0;position:relative;transition:height .3s ease;`;
+    bar.title = v + '% typical';
+
+    if (isToday && i === currentSlot && currentSlot >= 0 && currentSlot < data.length) {
+      const variance = (Math.sin(Date.now() / 80000 + i * 1.7) * 0.22 + (Math.sin(Date.now()/50000)*0.1));
+      const liveV = Math.max(4, Math.min(mx, Math.round(v * (1 + variance))));
+      const liveBar = document.createElement('div');
+      liveBar.style.cssText = `position:absolute;bottom:0;left:0;right:0;height:${(liveV/mx*100)}%;background:#6ec6f5;opacity:0.55;border-radius:4px 4px 0 0;`;
+      liveBar.title = liveV + '% live right now';
+      bar.appendChild(liveBar);
+      bar.style.background = '#1e5f8e';
+    }
+
+    bar.onclick = () => showToast(v + '% busy at this hour' + (isToday && i === currentSlot ? ' · Live now' : ''));
+    wrapper.appendChild(bar);
+    el.appendChild(wrapper);
+  });
 }
+
 function prevDay(){_dayIdx=(_dayIdx-1+DAYS.length)%DAYS.length;document.getElementById('day-label').textContent=DAYS[_dayIdx];renderCharts();}
 function nextDay(){_dayIdx=(_dayIdx+1)%DAYS.length;document.getElementById('day-label').textContent=DAYS[_dayIdx];renderCharts();}
 renderCharts();
@@ -1210,19 +1295,165 @@ function resetTimer(){
 function setGoal(v){_tGoal=parseInt(v)*60;updateTimerUI();}
 updateTimerUI();
 
+// ── ROTARY DIAL ───────────────────────────────────
+(function(){
+  const CIRC = 2 * Math.PI * 78; // circumference of goal arc (r=78)
+  const MIN_MIN = 5, MAX_MIN = 120;
+  let _goalMin = 30;
+  let _dragging = false;
+  let _lastAngle = 0;
+  let _accAngle = 0; // accumulated angle from start position
+
+  const wrap = document.getElementById('rotary-wrap');
+  const handle = document.getElementById('rotary-handle');
+  const goalArc = document.getElementById('goal-arc');
+  const goalDisplay = document.getElementById('goal-display');
+  const tickG = document.getElementById('tick-marks');
+
+  // Draw tick marks at 15-min intervals
+  function drawTicks() {
+    if (!tickG) return;
+    tickG.innerHTML = '';
+    const steps = Math.floor(MAX_MIN / 15); // 8 ticks
+    for (let i = 0; i <= steps; i++) {
+      const min = i * 15;
+      const frac = min / MAX_MIN;
+      const angle = frac * 360 - 90;
+      const rad = angle * Math.PI / 180;
+      const r1 = 72, r2 = 84;
+      const x1 = 85 + r1 * Math.cos(rad), y1 = 85 + r1 * Math.sin(rad);
+      const x2 = 85 + r2 * Math.cos(rad), y2 = 85 + r2 * Math.sin(rad);
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',x1); line.setAttribute('y1',y1);
+      line.setAttribute('x2',x2); line.setAttribute('y2',y2);
+      line.setAttribute('stroke', min % 60 === 0 ? '#4a9fd4' : '#c8e8f9');
+      line.setAttribute('stroke-width', min % 60 === 0 ? '2' : '1');
+      tickG.appendChild(line);
+      // Label at hour marks
+      if (min > 0 && min % 60 === 0) {
+        const rL = 65;
+        const xL = 85 + rL * Math.cos(rad), yL = 85 + rL * Math.sin(rad);
+        const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+        txt.setAttribute('x', xL); txt.setAttribute('y', yL);
+        txt.setAttribute('text-anchor','middle'); txt.setAttribute('dominant-baseline','middle');
+        txt.setAttribute('font-size','7'); txt.setAttribute('fill','#aaa');
+        txt.setAttribute('font-family','Nunito'); txt.setAttribute('font-weight','800');
+        txt.textContent = (min/60)+'h';
+        tickG.appendChild(txt);
+      }
+    }
+  }
+  drawTicks();
+
+  function updateDial(min) {
+    _goalMin = Math.round(Math.max(MIN_MIN, Math.min(MAX_MIN, min)));
+    const frac = _goalMin / MAX_MIN;
+    const angleRad = frac * 2 * Math.PI - Math.PI/2;
+    // Move handle
+    const hx = 85 + 78 * Math.cos(angleRad);
+    const hy = 85 + 78 * Math.sin(angleRad);
+    handle.setAttribute('cx', hx);
+    handle.setAttribute('cy', hy);
+    // Update goal arc
+    const dashOffset = CIRC * (1 - frac);
+    goalArc.setAttribute('stroke-dashoffset', dashOffset);
+    // Update text
+    const h = Math.floor(_goalMin/60), m = _goalMin%60;
+    goalDisplay.textContent = h > 0 ? (h+'h '+(m>0?m+'m':'')) : _goalMin+' min';
+    // Sync with timer
+    _tGoal = _goalMin * 60;
+    updateTimerUI();
+  }
+
+  function getAngle(e) {
+    const rect = wrap.getBoundingClientRect();
+    const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return Math.atan2(clientY - cy, clientX - cx) * 180 / Math.PI;
+  }
+
+  function onStart(e) {
+    // Only start drag if clicking near the outer ring (not inner donut)
+    const rect = wrap.getBoundingClientRect();
+    const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const dist = Math.hypot(clientX - cx, clientY - cy);
+    const outerR = rect.width * 0.48, innerR = rect.width * 0.32;
+    if (dist < innerR || dist > outerR) return; // ignore inner donut area
+    e.preventDefault();
+    _dragging = true;
+    _lastAngle = getAngle(e);
+    wrap.style.cursor = 'grabbing';
+  }
+
+  function onMove(e) {
+    if (!_dragging) return;
+    e.preventDefault();
+    const angle = getAngle(e);
+    let delta = angle - _lastAngle;
+    // Handle wraparound
+    if (delta > 180) delta -= 360;
+    if (delta < -180) delta += 360;
+    _lastAngle = angle;
+    // Convert angle delta to minutes (360deg = MAX_MIN)
+    const minDelta = delta / 360 * MAX_MIN;
+    updateDial(_goalMin + minDelta);
+  }
+
+  function onEnd() {
+    _dragging = false;
+    wrap.style.cursor = 'grab';
+  }
+
+  wrap.addEventListener('mousedown', onStart);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onEnd);
+  wrap.addEventListener('touchstart', onStart, {passive:false});
+  window.addEventListener('touchmove', onMove, {passive:false});
+  window.addEventListener('touchend', onEnd);
+
+  // Init at 30 min
+  updateDial(30);
+})();
+
 // ── FULL-YEAR HEATMAP (GitHub style) ─────────────
 const MONTH_SHORT=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 function workHrs(d){
-  const s=d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();
-  const r=((s*9301+49297)%233280)/233280;
-  if(r<.28) return 0; if(r<.5) return+(r*3).toFixed(1); if(r<.72) return+(r*5).toFixed(1);
-  if(r<.88) return+(r*6.5).toFixed(1); return+(r*7.5).toFixed(1);
+  // Use a seeded pseudo-random based on the date
+  const s = d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate();
+  // Multiple primes for more chaotic distribution
+  const r1 = ((s*2654435761)>>>0) / 4294967296;
+  const r2 = (((s^(s>>16))*0x45d9f3b)>>>0) / 4294967296;
+  const r3 = (((s*1234567891)+987654321)>>>0) / 4294967296;
+
+  // ~35% chance of no session
+  if (r1 < 0.35) return 0;
+
+  // Weight toward 1–3h range, occasional longer sessions
+  // Use r2 to pick a base, r3 for the fractional minutes
+  let base;
+  if (r2 < 0.35)      base = 0.5 + r3 * 1.2;   // 0.5–1.7h
+  else if (r2 < 0.65) base = 1.4 + r3 * 1.3;   // 1.4–2.7h
+  else if (r2 < 0.85) base = 2.3 + r3 * 1.5;   // 2.3–3.8h
+  else if (r2 < 0.95) base = 3.5 + r3 * 1.8;   // 3.5–5.3h
+  else                base = 4.8 + r3 * 1.2;   // 4.8–6.0h
+
+  base = Math.min(6.0, base);
+
+  // Convert to h:mm format — random minutes (not just .0 or .5)
+  const totalMins = Math.round(base * 60);
+  const hrs = Math.floor(totalMins / 60);
+  const mins = totalMins % 60;
+  return { hrs, mins, total: base, label: hrs + 'h ' + (mins > 0 ? mins + 'm' : '') };
 }
 
 function buildCalendar(){
   const weeksEl=document.getElementById('heatmap-weeks');
   const monthRowEl=document.getElementById('heatmap-month-row');
+  const outerEl=document.getElementById('heatmap-outer') || weeksEl?.closest('.heatmap-outer');
   if(!weeksEl) return;
   weeksEl.innerHTML=''; monthRowEl.innerHTML='';
 
@@ -1230,7 +1461,6 @@ function buildCalendar(){
   today.setHours(0,0,0,0);
   const WEEKS=53;
 
-  // Start from the Sunday WEEKS weeks ago
   const start=new Date(today);
   start.setDate(start.getDate() - (start.getDay()) - (WEEKS-1)*7);
 
@@ -1258,10 +1488,13 @@ function buildCalendar(){
       if(isFuture){
         cell.className='hm-cell future-cell';
       } else {
-        const hrs=workHrs(d);
-        const lvl=hrs===0?0:hrs<1.5?1:hrs<3?2:hrs<5?3:4;
+        const data=workHrs(d);
+        const hrs=data?data.total:0;
+        const lvl=hrs===0?0:hrs<1.5?1:hrs<3?2:hrs<4.5?3:4;
         cell.className='hm-cell'+(lvl?' l'+lvl:'')+(isToday?' today-cell':'');
-        const tip=`${MONTH_SHORT[d.getMonth()]} ${d.getDate()} — ${hrs>0?hrs+'h worked':'no session'}`;
+        const tip = data && hrs > 0
+          ? `${MONTH_SHORT[d.getMonth()]} ${d.getDate()} — ${data.label.trim()} worked`
+          : `${MONTH_SHORT[d.getMonth()]} ${d.getDate()} — no session`;
         cell.title=tip;
         cell.onclick=()=>showToast(tip);
       }
@@ -1269,6 +1502,12 @@ function buildCalendar(){
     }
     weeksEl.appendChild(col);
   }
+
+  // Auto-scroll so today (rightmost column) is visible
+  requestAnimationFrame(() => {
+    const container = document.querySelector('.heatmap-outer');
+    if (container) container.scrollLeft = container.scrollWidth;
+  });
 }
 function calPrev(){} function calNext(){} // kept for compatibility
 

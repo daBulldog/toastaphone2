@@ -263,13 +263,16 @@
   .tin-lbl { font-size: 0.62rem; font-weight: 800; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
 
   /* GitHub-style full-year heatmap */
-  .heatmap-outer { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .heatmap-outer { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
   .heatmap-inner { display: flex; gap: 3px; width: max-content; }
-  .hm-dow-col { display: flex; flex-direction: column; justify-content: space-between; padding-top: 18px; gap: 3px; margin-right: 2px; }
-  .hm-dow-lbl { font-size: 0.55rem; font-weight: 800; color: #aaa; text-align: right; height: 11px; line-height: 11px; }
-  .hm-week-col { display: flex; flex-direction: column; gap: 3px; }
-  .hm-month-row { display: flex; gap: 3px; margin-bottom: 4px; padding-left: 28px; }
-  .hm-month-lbl { font-size: 0.6rem; font-weight: 800; color: #aaa; flex: 1; min-width: 0; }
+  .hm-dow-col { display: flex; flex-direction: column; gap: 3px; margin-right: 4px; padding-top: 18px; flex-shrink: 0; }
+  .hm-dow-lbl { font-size: 0.55rem; font-weight: 800; color: #aaa; text-align: right; height: 11px; line-height: 11px; width: 22px; }
+  .hm-week-col { display: flex; flex-direction: column; gap: 3px; flex-shrink: 0; }
+  .hm-grid-wrap { display: flex; flex-direction: column; gap: 0; }
+  .hm-months-bar { display: flex; gap: 3px; margin-bottom: 3px; height: 14px; }
+  .hm-month-spacer { flex-shrink: 0; } /* width set by JS to match week columns */
+  .hm-month-lbl-abs { font-size: 0.6rem; font-weight: 800; color: #aaa; white-space: nowrap; }
+  .hm-weeks-row { display: flex; gap: 3px; }
   .hm-cell {
     width: 11px; height: 11px; border-radius: 2px;
     background: #ddeef7; cursor: pointer; transition: transform 0.1s; flex-shrink: 0;
@@ -279,14 +282,45 @@
   .hm-cell.l2 { background: #6ec6f5; }
   .hm-cell.l3 { background: #4a9fd4; }
   .hm-cell.l4 { background: #1e5f8e; }
-  .hm-cell.today-cell {
-    outline: 2px solid var(--navy);
-    outline-offset: 1px;
-    border-radius: 2px;
-  }
+  .hm-cell.today-cell { outline: 2px solid var(--navy); outline-offset: 1px; border-radius: 2px; }
   .hm-cell.future-cell { background: #edf5fb; opacity: 0.4; cursor: default; }
   .hm-legend { display: flex; align-items: center; gap: 5px; margin-top: 8px; font-size: 0.7rem; color: #888; font-weight: 700; justify-content: flex-end; }
   .hm-swatch { width: 11px; height: 11px; border-radius: 2px; }
+
+  /* Apple-style scroll picker — single column */
+  .scroll-picker-wrap {
+    display: flex; align-items: center; justify-content: center;
+    position: relative; user-select: none;
+  }
+  .scroll-picker-col {
+    width: 100px; height: 96px; overflow: hidden; position: relative;
+    cursor: ns-resize;
+  }
+  /* Fade top & bottom — each covers exactly 1 item height (32px) */
+  .scroll-picker-col::before, .scroll-picker-col::after {
+    content: ''; position: absolute; left: 0; right: 0; height: 32px; z-index: 2; pointer-events: none;
+  }
+  .scroll-picker-col::before { top: 0; background: linear-gradient(to bottom, var(--sky-light) 20%, transparent 100%); }
+  .scroll-picker-col::after  { bottom: 0; background: linear-gradient(to top, var(--sky-light) 20%, transparent 100%); }
+  .scroll-picker-list {
+    display: flex; flex-direction: column; align-items: center;
+    will-change: transform;
+  }
+  .scroll-picker-item {
+    height: 32px; line-height: 32px;
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.05rem; color: #b0cfe0; flex-shrink: 0;
+    width: 100px; text-align: center; transition: none;
+  }
+  .scroll-picker-item.selected { color: var(--navy); font-size: 1.25rem; }
+  /* Selection highlight bar — sits at vertical center of the 96px container */
+  .scroll-picker-selector {
+    position: absolute; top: 50%; left: 8px; right: 8px;
+    height: 32px; transform: translateY(-50%);
+    border-top: 2px solid var(--blue); border-bottom: 2px solid var(--blue);
+    pointer-events: none; z-index: 3; border-radius: 6px;
+    background: rgba(74,159,212,0.07);
+  }
 
   /* Weekly bars — all blue shades */
   .weekly-chart { display: flex; align-items: flex-end; gap: 6px; height: 90px; margin: 10px 0 4px; width: 100%; }
@@ -595,53 +629,37 @@
       </div>
     </div>
 
-    <!-- Timer — rotary dial sets goal, tap ring to start -->
+    <!-- Timer card -->
     <div class="card" style="display:flex;flex-direction:column;align-items:center;padding:22px 16px;gap:14px;">
 
-      <!-- Rotary dial goal setter -->
-      <div style="text-align:center;margin-bottom:2px;">
-        <div style="font-size:.65rem;font-weight:800;color:var(--blue-dark);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Drag to set goal</div>
-        <div id="rotary-wrap" style="position:relative;width:170px;height:170px;margin:0 auto;cursor:grab;touch-action:none;" title="Drag to set goal">
-          <!-- Outer ring (goal setter) -->
-          <svg id="rotary-svg" viewBox="0 0 170 170" style="width:170px;height:170px;position:absolute;top:0;left:0;">
-            <!-- Track -->
-            <circle cx="85" cy="85" r="78" fill="none" stroke="#ddeef7" stroke-width="10"/>
-            <!-- Goal arc -->
-            <circle id="goal-arc" cx="85" cy="85" r="78" fill="none" stroke="#b8dff7" stroke-width="10"
-              stroke-linecap="round" stroke-dasharray="490.1" stroke-dashoffset="245"
-              transform="rotate(-90 85 85)"/>
-            <!-- Tick marks every 15min -->
-            <g id="tick-marks"></g>
-            <!-- Drag handle -->
-            <circle id="rotary-handle" cx="85" cy="7" r="8" fill="var(--navy)" stroke="white" stroke-width="2.5"/>
+      <!-- Donut timer -->
+      <div class="donut-outer">
+        <div class="donut-wrap" onclick="toggleTimer()" title="Tap to start / pause">
+          <svg viewBox="0 0 120 120">
+            <circle class="donut-bg" cx="60" cy="60" r="54"/>
+            <circle class="donut-track" cx="60" cy="60" r="48"/>
+            <circle class="donut-prog" id="timer-ring" cx="60" cy="60" r="48"
+              stroke-dasharray="301.6" stroke-dashoffset="301.6"/>
           </svg>
-
-          <!-- Inner donut (progress) -->
-          <div style="position:absolute;inset:16px;border-radius:50%;overflow:hidden;">
-            <div class="donut-outer" style="width:100%;height:100%;">
-              <div class="donut-wrap" id="donut-tap" onclick="toggleTimer()" title="Tap to start / pause"
-                style="width:100%;height:100%;border-radius:50%;">
-                <svg viewBox="0 0 120 120" style="width:100%;height:100%;">
-                  <circle class="donut-bg" cx="60" cy="60" r="54"/>
-                  <circle class="donut-track" cx="60" cy="60" r="48"/>
-                  <circle class="donut-prog" id="timer-ring" cx="60" cy="60" r="48"
-                    stroke-dasharray="301.6" stroke-dashoffset="301.6"/>
-                </svg>
-                <div class="donut-center">
-                  <div class="mode" id="timer-mode">WORK</div>
-                  <div class="session" id="timer-lbl" style="font-size:.6rem;">TAP TO START</div>
-                  <div class="tdisp" id="timer-display">00:00:00</div>
-                </div>
-              </div>
-            </div>
+          <div class="donut-center">
+            <div class="mode" id="timer-mode">WORK</div>
+            <div class="session" id="timer-lbl">TAP TO START</div>
+            <div class="tdisp" id="timer-display">00:00:00</div>
           </div>
         </div>
-        <div style="font-size:.72rem;font-weight:800;color:var(--blue-dark);margin-top:8px;">
-          Goal: <span id="goal-display">30 min</span>
-        </div>
+        <div class="donut-hint" id="timer-hint">Tap circle to begin session</div>
       </div>
 
-      <div class="donut-hint" id="timer-hint">Tap circle to begin · drag ring to set goal</div>
+      <!-- Single-column scroll picker for goal -->
+      <div style="width:100%;">
+        <div style="font-size:.65rem;font-weight:800;color:var(--blue-dark);text-transform:uppercase;letter-spacing:.08em;text-align:center;margin-bottom:6px;">Set Goal</div>
+        <div class="scroll-picker-wrap">
+          <div style="position:relative;">
+            <div class="scroll-picker-selector"></div>
+            <div class="scroll-picker-col" id="picker-goal"></div>
+          </div>
+        </div>
+      </div>
 
       <div style="display:flex;gap:20px;width:100%;justify-content:center;">
         <div class="timer-stat" style="text-align:center;">
@@ -676,10 +694,11 @@
           <span class="card-title" style="margin-bottom:0">Activity</span>
           <span style="font-size:.68rem;font-weight:800;color:#888;background:var(--sky-light);padding:3px 10px;border-radius:20px;">Last 12 months</span>
         </div>
-        <div class="heatmap-outer">
-          <div id="heatmap-month-row" class="hm-month-row"></div>
-          <div style="display:flex;gap:3px;">
+        <div class="heatmap-outer" id="heatmap-outer">
+          <div style="display:flex;gap:0;">
+            <!-- Day-of-week labels column -->
             <div class="hm-dow-col">
+              <div style="height:14px;"></div><!-- spacer for month row -->
               <div class="hm-dow-lbl"></div>
               <div class="hm-dow-lbl">Mon</div>
               <div class="hm-dow-lbl"></div>
@@ -688,7 +707,11 @@
               <div class="hm-dow-lbl">Fri</div>
               <div class="hm-dow-lbl"></div>
             </div>
-            <div id="heatmap-weeks" style="display:flex;gap:3px;"></div>
+            <!-- Grid: month row + week columns -->
+            <div class="hm-grid-wrap">
+              <div id="heatmap-month-row" class="hm-months-bar"></div>
+              <div id="heatmap-weeks" class="hm-weeks-row"></div>
+            </div>
           </div>
         </div>
         <div class="hm-legend">
@@ -1295,127 +1318,121 @@ function resetTimer(){
 function setGoal(v){_tGoal=parseInt(v)*60;updateTimerUI();}
 updateTimerUI();
 
-// ── ROTARY DIAL ───────────────────────────────────
+// ── SINGLE-WHEEL SCROLL PICKER ───────────────────
 (function(){
-  const CIRC = 2 * Math.PI * 78; // circumference of goal arc (r=78)
-  const MIN_MIN = 5, MAX_MIN = 120;
-  let _goalMin = 30;
-  let _dragging = false;
-  let _lastAngle = 0;
-  let _accAngle = 0; // accumulated angle from start position
+  const ITEM_H = 32;   // must match CSS height
+  const COL_H  = 96;   // must match CSS height (= 3 items visible)
+  const PAD    = 1;    // 1 padding item each side → 3 visible total, center = selected
 
-  const wrap = document.getElementById('rotary-wrap');
-  const handle = document.getElementById('rotary-handle');
-  const goalArc = document.getElementById('goal-arc');
-  const goalDisplay = document.getElementById('goal-display');
-  const tickG = document.getElementById('tick-marks');
-
-  // Draw tick marks at 15-min intervals
-  function drawTicks() {
-    if (!tickG) return;
-    tickG.innerHTML = '';
-    const steps = Math.floor(MAX_MIN / 15); // 8 ticks
-    for (let i = 0; i <= steps; i++) {
-      const min = i * 15;
-      const frac = min / MAX_MIN;
-      const angle = frac * 360 - 90;
-      const rad = angle * Math.PI / 180;
-      const r1 = 72, r2 = 84;
-      const x1 = 85 + r1 * Math.cos(rad), y1 = 85 + r1 * Math.sin(rad);
-      const x2 = 85 + r2 * Math.cos(rad), y2 = 85 + r2 * Math.sin(rad);
-      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-      line.setAttribute('x1',x1); line.setAttribute('y1',y1);
-      line.setAttribute('x2',x2); line.setAttribute('y2',y2);
-      line.setAttribute('stroke', min % 60 === 0 ? '#4a9fd4' : '#c8e8f9');
-      line.setAttribute('stroke-width', min % 60 === 0 ? '2' : '1');
-      tickG.appendChild(line);
-      // Label at hour marks
-      if (min > 0 && min % 60 === 0) {
-        const rL = 65;
-        const xL = 85 + rL * Math.cos(rad), yL = 85 + rL * Math.sin(rad);
-        const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
-        txt.setAttribute('x', xL); txt.setAttribute('y', yL);
-        txt.setAttribute('text-anchor','middle'); txt.setAttribute('dominant-baseline','middle');
-        txt.setAttribute('font-size','7'); txt.setAttribute('fill','#aaa');
-        txt.setAttribute('font-family','Nunito'); txt.setAttribute('font-weight','800');
-        txt.textContent = (min/60)+'h';
-        tickG.appendChild(txt);
-      }
-    }
+  // Build values: 0:00, 0:05, 0:10 ... 8:00 (97 entries)
+  const VALUES = [];
+  for (let m = 0; m <= 8 * 60; m += 5) {
+    const h = Math.floor(m / 60);
+    const min = m % 60;
+    VALUES.push({ label: h + ':' + String(min).padStart(2,'0'), totalMins: m });
   }
-  drawTicks();
 
-  function updateDial(min) {
-    _goalMin = Math.round(Math.max(MIN_MIN, Math.min(MAX_MIN, min)));
-    const frac = _goalMin / MAX_MIN;
-    const angleRad = frac * 2 * Math.PI - Math.PI/2;
-    // Move handle
-    const hx = 85 + 78 * Math.cos(angleRad);
-    const hy = 85 + 78 * Math.sin(angleRad);
-    handle.setAttribute('cx', hx);
-    handle.setAttribute('cy', hy);
-    // Update goal arc
-    const dashOffset = CIRC * (1 - frac);
-    goalArc.setAttribute('stroke-dashoffset', dashOffset);
-    // Update text
-    const h = Math.floor(_goalMin/60), m = _goalMin%60;
-    goalDisplay.textContent = h > 0 ? (h+'h '+(m>0?m+'m':'')) : _goalMin+' min';
-    // Sync with timer
-    _tGoal = _goalMin * 60;
+  const el = document.getElementById('picker-goal');
+  if (!el) return;
+
+  const list = document.createElement('div');
+  list.className = 'scroll-picker-list';
+
+  // Padding ghost items
+  for (let p = 0; p < PAD; p++) {
+    const g = document.createElement('div');
+    g.className = 'scroll-picker-item';
+    list.appendChild(g);
+  }
+  VALUES.forEach((v, i) => {
+    const item = document.createElement('div');
+    item.className = 'scroll-picker-item';
+    item.textContent = v.label;
+    list.appendChild(item);
+  });
+  for (let p = 0; p < PAD; p++) {
+    const g = document.createElement('div');
+    g.className = 'scroll-picker-item';
+    list.appendChild(g);
+  }
+
+  el.appendChild(list);
+
+  let currentIdx = 6; // default = 0:30
+  let isDragging = false, startY = 0, startOffset = 0, lastY = 0, lastT = 0, velocity = 0;
+
+  // Offset so that item at `idx` sits in the center slot of the 3-visible window
+  // Center slot top = PAD * ITEM_H from list top, which maps to translateY offset:
+  // translateY = -(idx * ITEM_H) so item[idx] starts at y=0 inside list,
+  // and the list itself starts at y = PAD*ITEM_H from container top... 
+  // Simpler: selected item should be centered in the 96px window.
+  // Container is 96px = 3 items. Center item starts at 32px from top.
+  // List starts at translateY T. Item i starts at T + (PAD+i)*ITEM_H from container top.
+  // We want item i center at 48px: T + (PAD+i)*ITEM_H + ITEM_H/2 = 48
+  // T = 48 - ITEM_H/2 - (PAD+i)*ITEM_H = 48 - 16 - (1+i)*32 = 32 - 32 - 32i = -32i
+  function getOffset(idx) { return -idx * ITEM_H; }
+
+  function allItems() { return [...list.querySelectorAll('.scroll-picker-item')]; }
+
+  function setIndex(idx, animate) {
+    idx = Math.max(0, Math.min(VALUES.length - 1, idx));
+    currentIdx = idx;
+    list.style.transition = animate ? 'transform 0.2s cubic-bezier(.25,.46,.45,.94)' : 'none';
+    list.style.transform = `translateY(${getOffset(idx)}px)`;
+    allItems().forEach((item, i) => {
+      item.classList.toggle('selected', i - PAD === idx);
+    });
+    // Update goal
+    const totalMins = VALUES[idx].totalMins;
+    _tGoal = Math.max(1, totalMins) * 60;
     updateTimerUI();
   }
 
-  function getAngle(e) {
-    const rect = wrap.getBoundingClientRect();
-    const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    return Math.atan2(clientY - cy, clientX - cx) * 180 / Math.PI;
-  }
-
-  function onStart(e) {
-    // Only start drag if clicking near the outer ring (not inner donut)
-    const rect = wrap.getBoundingClientRect();
-    const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-    const dist = Math.hypot(clientX - cx, clientY - cy);
-    const outerR = rect.width * 0.48, innerR = rect.width * 0.32;
-    if (dist < innerR || dist > outerR) return; // ignore inner donut area
+  function onDown(e) {
+    isDragging = true;
+    startY = lastY = e.touches ? e.touches[0].clientY : e.clientY;
+    lastT = Date.now(); velocity = 0;
+    const mat = new DOMMatrix(getComputedStyle(list).transform);
+    startOffset = mat.m42;
+    list.style.transition = 'none';
     e.preventDefault();
-    _dragging = true;
-    _lastAngle = getAngle(e);
-    wrap.style.cursor = 'grabbing';
   }
 
   function onMove(e) {
-    if (!_dragging) return;
+    if (!isDragging) return;
+    const y = e.touches ? e.touches[0].clientY : e.clientY;
+    const dt = Date.now() - lastT;
+    if (dt > 0) velocity = (y - lastY) / dt * 14;
+    lastY = y; lastT = Date.now();
+    const offset = startOffset + (y - startY);
+    list.style.transform = `translateY(${offset}px)`;
+    // Live highlight
+    const approx = Math.max(0, Math.min(VALUES.length-1, Math.round(-offset / ITEM_H)));
+    allItems().forEach((item, i) => item.classList.toggle('selected', i - PAD === approx));
     e.preventDefault();
-    const angle = getAngle(e);
-    let delta = angle - _lastAngle;
-    // Handle wraparound
-    if (delta > 180) delta -= 360;
-    if (delta < -180) delta += 360;
-    _lastAngle = angle;
-    // Convert angle delta to minutes (360deg = MAX_MIN)
-    const minDelta = delta / 360 * MAX_MIN;
-    updateDial(_goalMin + minDelta);
   }
 
-  function onEnd() {
-    _dragging = false;
-    wrap.style.cursor = 'grab';
+  function onUp() {
+    if (!isDragging) return;
+    isDragging = false;
+    const mat = new DOMMatrix(getComputedStyle(list).transform);
+    const snapped = Math.round((-mat.m42 + velocity * 6) / ITEM_H);
+    setIndex(snapped, true);
   }
 
-  wrap.addEventListener('mousedown', onStart);
+  el.addEventListener('mousedown', onDown);
   window.addEventListener('mousemove', onMove);
-  window.addEventListener('mouseup', onEnd);
-  wrap.addEventListener('touchstart', onStart, {passive:false});
+  window.addEventListener('mouseup', onUp);
+  el.addEventListener('touchstart', onDown, {passive:false});
   window.addEventListener('touchmove', onMove, {passive:false});
-  window.addEventListener('touchend', onEnd);
+  window.addEventListener('touchend', onUp);
+  el.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    setIndex(currentIdx + (e.deltaY > 0 ? 1 : -1), true);
+  }, {passive:false});
 
-  // Init at 30 min
-  updateDial(30);
+  // Init at 0:00
+  setIndex(0, false);
 })();
 
 // ── FULL-YEAR HEATMAP (GitHub style) ─────────────
@@ -1453,26 +1470,31 @@ function workHrs(d){
 function buildCalendar(){
   const weeksEl=document.getElementById('heatmap-weeks');
   const monthRowEl=document.getElementById('heatmap-month-row');
-  const outerEl=document.getElementById('heatmap-outer') || weeksEl?.closest('.heatmap-outer');
   if(!weeksEl) return;
   weeksEl.innerHTML=''; monthRowEl.innerHTML='';
 
-  const today=new Date();
-  today.setHours(0,0,0,0);
+  const today=new Date(); today.setHours(0,0,0,0);
   const WEEKS=53;
+  const CELL=11, GAP=3, COL=CELL+GAP; // 14px per column
 
   const start=new Date(today);
-  start.setDate(start.getDate() - (start.getDay()) - (WEEKS-1)*7);
+  start.setDate(start.getDate() - today.getDay() - (WEEKS-1)*7);
 
-  // Build month labels
+  // Build month label row: one div per week column, show label only when month changes
   let lastMonth=-1;
   for(let w=0;w<WEEKS;w++){
     const d=new Date(start); d.setDate(d.getDate()+w*7);
     const mo=d.getMonth();
     const lbl=document.createElement('div');
-    lbl.className='hm-month-lbl';
-    lbl.textContent=(mo!==lastMonth)?MONTH_SHORT[mo]:'';
-    if(mo!==lastMonth) lastMonth=mo;
+    lbl.style.cssText=`width:${CELL}px;flex-shrink:0;${w<WEEKS-1?'margin-right:'+GAP+'px':''}`;
+    if(mo!==lastMonth){
+      lbl.textContent=MONTH_SHORT[mo];
+      lbl.style.fontSize='0.6rem';
+      lbl.style.fontWeight='800';
+      lbl.style.color='#aaa';
+      lbl.style.whiteSpace='nowrap';
+      lastMonth=mo;
+    }
     monthRowEl.appendChild(lbl);
   }
 
@@ -1480,6 +1502,7 @@ function buildCalendar(){
   for(let w=0;w<WEEKS;w++){
     const col=document.createElement('div');
     col.className='hm-week-col';
+    if(w<WEEKS-1) col.style.marginRight=GAP+'px';
     for(let dow=0;dow<7;dow++){
       const d=new Date(start); d.setDate(d.getDate()+w*7+dow);
       const cell=document.createElement('div');
@@ -1487,12 +1510,14 @@ function buildCalendar(){
       const isToday=d.getTime()===today.getTime();
       if(isFuture){
         cell.className='hm-cell future-cell';
+        if(dow<6) cell.style.marginBottom=GAP+'px';
       } else {
         const data=workHrs(d);
         const hrs=data?data.total:0;
         const lvl=hrs===0?0:hrs<1.5?1:hrs<3?2:hrs<4.5?3:4;
         cell.className='hm-cell'+(lvl?' l'+lvl:'')+(isToday?' today-cell':'');
-        const tip = data && hrs > 0
+        if(dow<6) cell.style.marginBottom=GAP+'px';
+        const tip = data && hrs>0
           ? `${MONTH_SHORT[d.getMonth()]} ${d.getDate()} — ${data.label.trim()} worked`
           : `${MONTH_SHORT[d.getMonth()]} ${d.getDate()} — no session`;
         cell.title=tip;
@@ -1503,13 +1528,13 @@ function buildCalendar(){
     weeksEl.appendChild(col);
   }
 
-  // Auto-scroll so today (rightmost column) is visible
-  requestAnimationFrame(() => {
-    const container = document.querySelector('.heatmap-outer');
-    if (container) container.scrollLeft = container.scrollWidth;
+  // Auto-scroll so today is visible on the right
+  requestAnimationFrame(()=>{
+    const container=document.getElementById('heatmap-outer');
+    if(container) container.scrollLeft=container.scrollWidth;
   });
 }
-function calPrev(){} function calNext(){} // kept for compatibility
+function calPrev(){} function calNext(){}
 
 // ── WEEKLY BARS (blue shades only) ──────────────────────────────────
 function buildWeekly(){

@@ -451,49 +451,47 @@
 <!-- ══ HOME ══════════════════════════════════ -->
 <div class="page" id="page-home">
   <div class="home-wrap">
-    <div class="home-eyebrow">Free · Community-powered · Troy, NY</div>
-    <h1 class="home-headline">Find your perfect<br><span>work space</span><br>before you leave.</h1>
-    <p class="home-sub">See real-time seat availability, noise levels, and busyness for libraries, cafés, and work spaces near you — so you never show up to a full room again.</p>
-    <div class="home-ctas">
+
+    <!-- Hero image / gif placeholder -->
+    <div style="border-radius:var(--radius);overflow:hidden;margin-bottom:28px;background:var(--sky-light);border:2px dashed var(--sky);aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;">
+      <div style="font-size:2.8rem;">📱🍞</div>
+      <div style="font-size:.72rem;font-weight:800;color:#aaa;text-transform:uppercase;letter-spacing:.1em;">Drop your image or gif here</div>
+      <div style="font-size:.62rem;font-weight:700;color:#bbb;">Replace this placeholder in the HTML</div>
+    </div>
+
+    <!-- Mission statement -->
+    <div style="margin-bottom:28px;">
+      <div style="font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-bottom:10px;">Free · Community-powered · Troy, NY</div>
+      <h1 style="font-family:'Fredoka One',cursive;font-size:clamp(1.7rem,5vw,2.4rem);color:var(--navy);line-height:1.2;margin-bottom:12px;">Find your perfect <span style="color:var(--blue);">work space</span> before you leave.</h1>
+      <p style="font-size:.93rem;font-weight:700;color:#666;line-height:1.7;">WorkSpot shows you real-time seat availability, noise levels, and busyness for libraries and cafés near you — so you never show up to a packed room again. Every rating is logged by people actually there right now.</p>
+    </div>
+
+    <!-- CTAs -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:36px;">
       <button class="btn-primary" onclick="showPage('explore')">Find a space</button>
       <button class="btn-ghost"   onclick="showPage('log')">Log where I am</button>
     </div>
-    <div class="home-steps">
-      <div class="home-step">
-        <div class="step-num">01</div>
-        <div class="step-title">Browse the map</div>
-        <div class="step-desc">See every nearby spot with live seat counts and peak hours before you leave home.</div>
-      </div>
-      <div class="home-step">
-        <div class="step-num">02</div>
-        <div class="step-title">Log conditions</div>
-        <div class="step-desc">Rate noise, brightness, and outlets in seconds. Your data helps the whole community.</div>
-      </div>
-      <div class="home-step">
-        <div class="step-num">03</div>
-        <div class="step-title">Track sessions</div>
-        <div class="step-desc">Built-in timer and stats keep your streaks alive and your work habits visible.</div>
-      </div>
+
+    <!-- Data transparency -->
+    <div class="home-data-box" style="margin-bottom:20px;">
+      <h3 style="font-family:'Fredoka One',cursive;font-size:1rem;color:var(--navy);margin-bottom:8px;">What data do we collect?</h3>
+      <p style="font-size:.78rem;font-weight:700;color:#666;line-height:1.6;margin-bottom:8px;">WorkSpot is community-powered — it only gets better when you log. Here's exactly what we use:</p>
+      <ul style="margin:0 0 8px 16px;">
+        <li style="font-size:.75rem;font-weight:700;color:#888;margin-bottom:3px;">Your slider ratings — noise, busyness, air quality, light, and outlets</li>
+        <li style="font-size:.75rem;font-weight:700;color:#888;margin-bottom:3px;">Which space you're at and the time of your log</li>
+        <li style="font-size:.75rem;font-weight:700;color:#888;margin-bottom:3px;">Session duration from the timer</li>
+        <li style="font-size:.75rem;font-weight:700;color:#888;margin-bottom:3px;">Location is only used while the app is open to show nearby spaces</li>
+      </ul>
+      <p style="font-size:.75rem;font-weight:700;color:#888;">We never sell your data. All ratings are anonymised before being shared publicly.</p>
     </div>
 
-    <!-- Onboarding: stat widget customizer -->
-    <div class="home-data-box" style="margin-bottom:16px;">
-      <h3>📊 Customize your Stats</h3>
-      <p style="margin-bottom:10px;">Choose which widgets appear on your Stats page. Toggle any on or off:</p>
+    <!-- Stats widget customizer -->
+    <div class="home-data-box">
+      <h3 style="font-family:'Fredoka One',cursive;font-size:1rem;color:var(--navy);margin-bottom:8px;">Customize your Stats</h3>
+      <p style="font-size:.78rem;font-weight:700;color:#666;margin-bottom:10px;">Choose which widgets appear on your Stats page:</p>
       <div class="stat-widget-chooser" id="widget-chooser"></div>
     </div>
 
-    <div class="home-data-box">
-      <h3>What data do we collect?</h3>
-      <p>WorkSpot is community-powered — it only gets better when you log. Here's exactly what we use:</p>
-      <ul>
-        <li>Your slider ratings (noise, busyness, air, light, outlets)</li>
-        <li>Which space you're at and what time you logged</li>
-        <li>Your work session duration from the timer</li>
-        <li>Location is only used while the app is open to show nearby spaces</li>
-      </ul>
-      <p style="margin-top:8px">We never sell your data. Ratings are anonymised before being shared publicly.</p>
-    </div>
   </div>
 </div>
 

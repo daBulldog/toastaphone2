@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WorkSpot</title>
+<title>Toast-A-Phone</title>
 <link rel="icon" href="data:,">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
@@ -436,13 +436,14 @@
 
 <!-- TOPBAR -->
 <div class="topbar">
-  <div class="topbar-title" onclick="showPage('home')">💼 WorkSpot</div>
+  <div class="topbar-title" onclick="showPage('home')">Toast-A-Phone</div>
   <div class="topbar-right">
-    <button class="topbar-tab" id="tab-home"    onclick="showPage('home')">HOME</button>
-    <button class="topbar-tab active" id="tab-explore" onclick="showPage('explore')">EXPLORE</button>
+    <button class="topbar-tab active" id="tab-home"    onclick="showPage('home')">HOME</button>
+    <button class="topbar-tab" id="tab-explore" onclick="showPage('explore')">EXPLORE</button>
     <button class="topbar-tab" id="tab-spaces"  onclick="showPage('spaces')">SPACES</button>
     <button class="topbar-tab" id="tab-log"     onclick="showPage('log')">LOG</button>
     <button class="topbar-tab" id="tab-stats"   onclick="showPage('stats')">STATS</button>
+    <button class="topbar-tab" id="tab-profile" onclick="showPage('profile')">PROFILE</button>
   </div>
 </div>
 
@@ -462,8 +463,8 @@
     <!-- Mission statement -->
     <div style="margin-bottom:28px;">
       <div style="font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#aaa;margin-bottom:10px;">Free · Community-powered · Troy, NY</div>
-      <h1 style="font-family:'Fredoka One',cursive;font-size:clamp(1.7rem,5vw,2.4rem);color:var(--navy);line-height:1.2;margin-bottom:12px;">Find your perfect <span style="color:var(--blue);">work space</span> before you leave.</h1>
-      <p style="font-size:.93rem;font-weight:700;color:#666;line-height:1.7;">WorkSpot shows you real-time seat availability, noise levels, and busyness for libraries and cafés near you — so you never show up to a packed room again. Every rating is logged by people actually there right now.</p>
+      <h1 style="font-family:'Fredoka One',cursive;font-size:clamp(1.7rem,5vw,2.4rem);color:var(--navy);line-height:1.2;margin-bottom:12px;">Find your perfect <span style="color:var(--blue);">study space</span></h1>
+      <p style="font-size:.93rem;font-weight:700;color:#666;line-height:1.7;">The Toast-A-Phone site shows you real-time seat availability at participating locations. Noise levels, busyness, and other metrics are crowdsourced by our users (you!) to help you find the perfect libraries and cafés near you. You'll never show up to a packed room again!</p>
     </div>
 
     <!-- CTAs -->
@@ -473,23 +474,16 @@
     </div>
 
     <!-- Data transparency -->
-    <div class="home-data-box" style="margin-bottom:20px;">
-      <h3 style="font-family:'Fredoka One',cursive;font-size:1rem;color:var(--navy);margin-bottom:8px;">What data do we collect?</h3>
-      <p style="font-size:.78rem;font-weight:700;color:#666;line-height:1.6;margin-bottom:8px;">WorkSpot is community-powered — it only gets better when you log. Here's exactly what we use:</p>
-      <ul style="margin:0 0 8px 16px;">
-        <li style="font-size:.75rem;font-weight:700;color:#888;margin-bottom:3px;">Your slider ratings — noise, busyness, air quality, light, and outlets</li>
-        <li style="font-size:.75rem;font-weight:700;color:#888;margin-bottom:3px;">Which space you're at and the time of your log</li>
-        <li style="font-size:.75rem;font-weight:700;color:#888;margin-bottom:3px;">Session duration from the timer</li>
-        <li style="font-size:.75rem;font-weight:700;color:#888;margin-bottom:3px;">Location is only used while the app is open to show nearby spaces</li>
-      </ul>
-      <p style="font-size:.75rem;font-weight:700;color:#888;">We never sell your data. All ratings are anonymised before being shared publicly.</p>
-    </div>
-
-    <!-- Stats widget customizer -->
     <div class="home-data-box">
-      <h3 style="font-family:'Fredoka One',cursive;font-size:1rem;color:var(--navy);margin-bottom:8px;">Customize your Stats</h3>
-      <p style="font-size:.78rem;font-weight:700;color:#666;margin-bottom:10px;">Choose which widgets appear on your Stats page:</p>
-      <div class="stat-widget-chooser" id="widget-chooser"></div>
+      <h3 style="font-family:'Fredoka One',cursive;font-size:1rem;color:var(--navy);margin-bottom:8px;">What data do we actually collect?</h3>
+      <p style="font-size:.78rem;font-weight:700;color:#666;line-height:1.6;margin-bottom:8px;">Toast-A-Phone is community-powered, it continues to improve every time you log. Here's exactly what we use:</p>
+      <ul style="margin:0 0 8px 16px;">
+        <li style="font-size:.75rem;font-weight:700;color:#888;margin-bottom:3px;">Your slider ratings: noise, busyness, air quality, light, and outlet availibility</li>
+        <li style="font-size:.75rem;font-weight:700;color:#888;margin-bottom:3px;">The time of your log and your location to connect the review to the space</li>
+        <li style="font-size:.75rem;font-weight:700;color:#888;margin-bottom:3px;">Session duration from the timer</li>
+        <li style="font-size:.75rem;font-weight:700;color:#888;margin-bottom:3px;">Location is only used while the app is open to show nearby spaces and </li>
+      </ul>
+      <p style="font-size:.75rem;font-weight:700;color:#888;">We never sell your data. All ratings are anonymised before being shared publicly. Every review adds value to the site and helps to build a database of studyspaces for you!</p>
     </div>
 
   </div>
@@ -515,7 +509,7 @@
 <div class="page" id="page-spaces">
   <div class="spaces-toprow">
     <button onclick="showPage('explore')" style="background:var(--sky-light);border:2px solid var(--sky);border-radius:20px;padding:5px 14px;font-family:Nunito,sans-serif;font-weight:800;font-size:.78rem;color:var(--navy);cursor:pointer;">← Map</button>
-    <span id="spaces-loc-title" style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--navy);flex:1;">Central Library</span>
+    <span id="spaces-loc-title" style="font-family:'Fredoka One',cursive;font-size:1.1rem;color:var(--navy);flex:1;">Bard & Baker</span>
     <button onclick="logThisSpace()" style="background:var(--blue-dark);color:white;border:none;border-radius:20px;padding:7px 16px;font-family:Nunito,sans-serif;font-weight:800;font-size:.78rem;cursor:pointer;transition:opacity .2s;" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">+ Log this space</button>
   </div>
   <div class="map-grid">
@@ -559,17 +553,36 @@
 <div class="page" id="page-log">
   <div class="log-space-bar">
     <div>
-      <div class="log-space-name" id="log-space-name">Central Library</div>
+      <div class="log-space-name" id="log-space-name">Bard & Baker</div>
       <div class="log-space-sub"  id="log-space-sub">Tap "Change" to switch location</div>
     </div>
     <button class="log-change-btn" onclick="openPicker()">Change</button>
   </div>
   <div class="log-grid">
     <div class="card log-main">
-      <div style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--navy);margin-bottom:4px;">How's it here?</div>
-      <div style="font-size:.75rem;font-weight:700;color:#888;margin-bottom:10px;">Move a slider then tap SAVE to log that rating.</div>
-      <div class="log-time-label">TIME OF OBSERVATION</div>
-      <div class="log-time" id="log-clock">12:45 PM</div>
+      <div style="font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--navy);margin-bottom:4px;">Share your opinions! Rate this space:</div>
+      <div style="font-size:.75rem;font-weight:700;color:#888;margin-bottom:10px;">Move a slider then tap SAVE to log each rating.</div>
+
+      <!-- Time of observation — scrollable picker defaulting to now -->
+      <div style="background:var(--sky-light);border-radius:14px;padding:10px 16px;margin-bottom:2px;">
+        <div style="font-size:.65rem;font-weight:800;color:var(--blue-dark);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Time of Observation</div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:0;">
+          <div style="position:relative;flex-shrink:0;">
+            <div class="scroll-picker-selector" style="left:4px;right:4px;"></div>
+            <div class="scroll-picker-col" id="obs-hour-picker" style="width:52px;"></div>
+          </div>
+          <div style="font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--navy);padding:0 2px;line-height:96px;">:</div>
+          <div style="position:relative;flex-shrink:0;">
+            <div class="scroll-picker-selector" style="left:4px;right:4px;"></div>
+            <div class="scroll-picker-col" id="obs-min-picker" style="width:52px;"></div>
+          </div>
+          <div style="position:relative;flex-shrink:0;">
+            <div class="scroll-picker-selector" style="left:4px;right:4px;"></div>
+            <div class="scroll-picker-col" id="obs-ampm-picker" style="width:52px;"></div>
+          </div>
+        </div>
+        <div style="text-align:center;font-size:.62rem;font-weight:700;color:#aaa;margin-top:4px;">Scroll to adjust — defaults to now</div>
+      </div>
 
       <div class="slider-row">
         <div class="slider-top">
@@ -592,6 +605,19 @@
         <div style="display:flex;justify-content:space-between;font-size:.58rem;font-weight:800;color:#aaa;margin-bottom:3px;"><span>Empty</span><span>Packed</span></div>
         <input type="range" min="0" max="100" value="55" oninput="onSlide(this,'busy')" id="sl-busy">
       </div>
+
+      <div class="slider-row">
+        <div class="slider-top">
+          <span class="slider-label"><span class="sl-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </span> TEMPERATURE</span>
+          <button class="save-btn unsaved" id="btn-temp" onclick="saveSlider('temp')">SAVE</button>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:.58rem;font-weight:800;color:#aaa;margin-bottom:3px;"><span>cold</span><span>Warm</span></div>
+        <input type="range" min="0" max="100" value="55" oninput="onSlide(this,'temp')" id="sl-temp">
+      </div>
+
+
 
       <div class="slider-row">
         <div class="slider-top">
@@ -754,9 +780,9 @@
               <circle cx="60" cy="60" r="48" fill="none" stroke="#6ec6f5" stroke-width="8" stroke-dasharray="301.6" stroke-dashoffset="90" stroke-linecap="round"/>
               <circle cx="60" cy="60" r="48" fill="none" stroke="#1e5f8e" stroke-width="12" stroke-dasharray="301.6" stroke-dashoffset="150" stroke-linecap="round"/>
             </svg>
-            <div class="daily-center"><div class="pct">70%</div><div class="lbl">DAILY<br>AVG</div></div>
+            <div class="daily-center"><div class="pct">1h 14m</div><div class="lbl">DAILY<br>AVG</div></div>
           </div>
-          <div style="font-size:.75rem;color:#888;margin-top:6px;">of goal reached</div>
+          <div style="font-size:.75rem;color:#888;margin-top:6px;">today: 56m</div>
         </div>
         <div class="card" style="text-align:center;display:flex;flex-direction:column;justify-content:center;">
           <div class="stat-label">Total Hours</div>
@@ -809,13 +835,89 @@
   </div>
 </div>
 
+<!-- ══ PROFILE ═════════════════════════════════ -->
+<div class="page" id="page-profile">
+  <div class="home-wrap">
+
+    <!-- Avatar circle + username display -->
+    <div style="text-align:center;margin-bottom:28px;">
+      <!-- Avatar: shows photo if uploaded, otherwise initials -->
+      <div style="position:relative;width:96px;height:96px;margin:0 auto 12px;">
+        <div id="profile-avatar"
+          style="width:96px;height:96px;border-radius:50%;background:var(--blue-dark);
+                 display:flex;align-items:center;justify-content:center;
+                 font-family:'Fredoka One',cursive;font-size:2.4rem;color:white;
+                 overflow:hidden;cursor:pointer;border:3px solid white;
+                 box-shadow:0 4px 16px rgba(30,95,142,0.2);transition:opacity .2s;"
+          onclick="document.getElementById('photo-upload').click()"
+          title="Tap to upload a photo">
+          <span id="avatar-initials">?</span>
+          <img id="avatar-img" style="display:none;width:100%;height:100%;object-fit:cover;" alt="Profile photo">
+        </div>
+        <!-- Camera icon overlay -->
+        <div onclick="document.getElementById('photo-upload').click()"
+          style="position:absolute;bottom:2px;right:2px;width:26px;height:26px;border-radius:50%;
+                 background:var(--navy);display:flex;align-items:center;justify-content:center;
+                 cursor:pointer;border:2px solid white;box-shadow:0 2px 6px rgba(0,0,0,.2);">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+            <circle cx="12" cy="13" r="4"/>
+          </svg>
+        </div>
+        <input id="photo-upload" type="file" accept="image/*" style="display:none;" onchange="handlePhotoUpload(this)">
+      </div>
+
+      <!-- Username displayed beneath avatar -->
+      <div id="profile-username-display"
+        style="font-family:'Fredoka One',cursive;font-size:1.3rem;color:var(--navy);
+               min-height:1.6rem;margin-bottom:4px;">
+        <!-- filled by JS -->
+      </div>
+      <div style="font-size:.65rem;font-weight:700;color:#aaa;margin-bottom:16px;">Tap photo to change · tap name to edit</div>
+
+      <!-- Username input -->
+      <div style="display:flex;align-items:center;gap:8px;max-width:280px;margin:0 auto;">
+        <input id="username-input" type="text" maxlength="20" placeholder="Set a username…"
+          style="flex:1;padding:9px 14px;border-radius:30px;border:2px solid var(--sky);
+                 font-family:'Nunito',sans-serif;font-weight:800;font-size:.9rem;
+                 color:var(--navy);outline:none;text-align:center;"
+          oninput="previewUsername(this.value)"
+          onfocus="this.style.borderColor='var(--blue)'"
+          onblur="this.style.borderColor='var(--sky)'"
+          onkeydown="if(event.key==='Enter')saveUsername()">
+        <button onclick="saveUsername()"
+          style="background:var(--blue-dark);color:white;border:none;border-radius:30px;
+                 padding:9px 18px;font-family:'Nunito',sans-serif;font-weight:800;
+                 font-size:.85rem;cursor:pointer;transition:opacity .2s;"
+          onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">Save</button>
+      </div>
+      <div id="username-saved-msg" style="font-size:.7rem;font-weight:700;color:var(--green);margin-top:6px;min-height:1em;"></div>
+    </div>
+
+    <!-- Stats summary tins -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px;">
+      <div class="stat-tin" style="border-top-color:var(--blue)"><div class="tin-num">847</div><div class="tin-lbl">Hours</div></div>
+      <div class="stat-tin" style="border-top-color:#4a9fd4"><div class="tin-num">14</div><div class="tin-lbl">Streak</div></div>
+      <div class="stat-tin" style="border-top-color:#1e5f8e"><div class="tin-num">12</div><div class="tin-lbl">Spots</div></div>
+    </div>
+
+    <!-- Customize stats widgets -->
+    <div class="home-data-box">
+      <h3 style="font-family:'Fredoka One',cursive;font-size:1rem;color:var(--navy);margin-bottom:8px;">Customize your Stats</h3>
+      <p style="font-size:.78rem;font-weight:700;color:#666;margin-bottom:10px;">Choose which widgets appear on your Stats page:</p>
+      <div class="stat-widget-chooser" id="widget-chooser-profile"></div>
+    </div>
+
+  </div>
+</div>
+
 </div><!-- /main -->
 
 <div class="bottomnav">
-  <div class="bottomnav-btn" id="bnav-home" onclick="showPage('home')">
+  <div class="bottomnav-btn active" id="bnav-home" onclick="showPage('home')">
     <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>HOME
   </div>
-  <div class="bottomnav-btn active" id="bnav-explore" onclick="showPage('explore')">
+  <div class="bottomnav-btn" id="bnav-explore" onclick="showPage('explore')">
     <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>EXPLORE
   </div>
   <div class="bottomnav-btn" id="bnav-spaces" onclick="showPage('spaces')">
@@ -827,15 +929,17 @@
   <div class="bottomnav-btn" id="bnav-stats" onclick="showPage('stats')">
     <svg viewBox="0 0 24 24"><path d="M5 20h2v-8H5v8zm4 0h2V4H9v16zm4 0h2v-4h-2v4zm4 0h2v-12h-2v12z"/></svg>STATS
   </div>
+  <div class="bottomnav-btn" id="bnav-profile" onclick="showPage('profile')">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>ME
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
 // ── NAV ─────────────────────────────────────────
-const TAB_IDX = {home:0,explore:1,spaces:2,log:3,stats:4};
+const TAB_IDX = {home:0,explore:1,spaces:2,log:3,stats:4,profile:5};
 function showPage(name) {
-  // If navigating to log from spaces, carry over the current space
   if (name === 'log' && _curLocId) setLogSpace(_curLocId);
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.topbar-tab').forEach(t => t.classList.remove('active'));
@@ -868,12 +972,14 @@ const WIDGETS = [
 let _activeWidgets = new Set(WIDGETS.map(w => w.id));
 
 function buildWidgetChooser() {
-  const el = document.getElementById('widget-chooser'); if (!el) return;
-  el.innerHTML = WIDGETS.map(w => `
-    <div class="widget-chip ${_activeWidgets.has(w.id) ? 'active' : ''}" onclick="toggleWidget('${w.id}',this)">
-      <span class="wc-check">${_activeWidgets.has(w.id) ? '✓' : '+'}</span>
-      ${w.label}
-    </div>`).join('');
+  ['widget-chooser','widget-chooser-profile'].forEach(elId => {
+    const el = document.getElementById(elId); if (!el) return;
+    el.innerHTML = WIDGETS.map(w => `
+      <div class="widget-chip ${_activeWidgets.has(w.id) ? 'active' : ''}" onclick="toggleWidget('${w.id}',this)">
+        <span class="wc-check">${_activeWidgets.has(w.id) ? '✓' : '+'}</span>
+        ${w.label}
+      </div>`).join('');
+  });
 }
 
 function toggleWidget(id, chipEl) {
@@ -890,7 +996,7 @@ function toggleWidget(id, chipEl) {
     chipEl.querySelector('.wc-check').textContent = '✓';
   }
 }
-buildWidgetChooser();
+// Note: buildWidgetChooser() is called in the profile init block below
 
 // ── LOCATION DATA ────────────────────────────────
 const LOCATIONS = [
@@ -899,35 +1005,35 @@ const LOCATIONS = [
     open:'Open until 9 PM', tags:['Quiet zones','Fast Wi-Fi','Printing','Accessible'],
     lat:42.7284, lng:-73.6918,
     floors:['Ground Floor','2nd Floor — Quiet','3rd Floor — Study Rooms'],
-    ratings:{noise:28,busy:45,air:72,light:70,outlets:60}
+    ratings:{noise:28,busy:45,air:72,light:70,outlets:60,temp:73}
   },
   { id:'rpi-library', name:'Folsom Library (RPI)', addr:'110 8th St, Troy NY',
     type:'library', avail:'ok', availPct:45, seats:'12', dist:'0.6 mi',
     open:'Open until 11 PM', tags:['Silent floor','Group rooms','AC','Fast Wi-Fi'],
     lat:42.7298, lng:-73.6786,
     floors:['Main Level','Upper Level — Silent'],
-    ratings:{noise:20,busy:55,air:78,light:68,outlets:80}
+    ratings:{noise:20,busy:55,air:78,light:68,outlets:80,temp:71}
   },
   { id:'river-street', name:'River Street Café', addr:'321 River St, Troy NY',
     type:'cafe', avail:'ok', availPct:40, seats:'8', dist:'0.4 mi',
     open:'Open until 7 PM', tags:['Cosy','Outlets','Great coffee'],
     lat:42.7310, lng:-73.6900,
     floors:['Main Floor'],
-    ratings:{noise:62,busy:58,air:65,light:80,outlets:45}
+    ratings:{noise:62,busy:58,air:65,light:80,outlets:45,temp:69}
   },
   { id:'brown-bag', name:'Brown Bag Café', addr:'432 Fulton St, Troy NY',
     type:'cafe', avail:'good', availPct:75, seats:'14', dist:'0.5 mi',
     open:'Open until 6 PM', tags:['Cosy','Quiet','Plants','Natural light'],
     lat:42.7265, lng:-73.6930,
     floors:['Main Floor'],
-    ratings:{noise:30,busy:40,air:85,light:75,outlets:35}
+    ratings:{noise:30,busy:40,air:85,light:75,outlets:35,temp:73}
   },
   { id:'arts-center', name:'Arts Center of the Capital Region', addr:'265 River St, Troy NY',
     type:'library', avail:'good', availPct:80, seats:'20', dist:'0.3 mi',
     open:'Open until 8 PM', tags:['Big windows','Quiet','Creative vibe','AC'],
     lat:42.7250, lng:-73.6950,
     floors:['Gallery Level','Upper Level'],
-    ratings:{noise:22,busy:35,air:80,light:90,outlets:55}
+    ratings:{noise:22,busy:35,air:80,light:90,outlets:55,temp:75}
   },
 ];
 
@@ -1118,10 +1224,10 @@ renderFloorTabs('troy-library');
 // ── COMMUNITY RATINGS (matching slider fields) ───
 function renderRatings(locId) {
   const loc=LOCATIONS.find(l=>l.id===locId);
-  const r=loc?loc.ratings:{noise:50,busy:50,air:50,light:50,outlets:50};
+  const r=loc?loc.ratings:{noise:50,busy:50,air:50,light:50,outlets:50,temp:73};
   const meters=[
     {l:'Noise',   v:r.noise,   lo:'Quiet', hi:'Loud'},
-    {l:'Busy',    v:r.busy,    lo:'Empty', hi:'Packed'},
+    {l:'Temp',    v:r.temp,    lo:'Cold', hi:'Warm'},
     {l:'Air',     v:r.air,     lo:'Stuffy',hi:'Fresh'},
     {l:'Light',   v:r.light,   lo:'Dark',  hi:'Bright'},
     {l:'Outlets', v:r.outlets, lo:'None',  hi:'Lots'},
@@ -1266,12 +1372,133 @@ function saveSlider(name) {
 }
 document.querySelectorAll('input[type=range]').forEach(el=>el.style.setProperty('--val',el.value+'%'));
 
-// ── CLOCK ────────────────────────────────────────
-function updateClock(){
-  const n=new Date(),h=n.getHours(),m=n.getMinutes();
-  const el=document.getElementById('log-clock'); if(el) el.textContent=`${h%12||12}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`;
+// ── TIME OF OBSERVATION PICKER ───────────────────
+(function(){
+  const ITEM_H = 32, PAD = 1;
+
+  // Hours 1–12, minutes 00–59 every minute, AM/PM
+  const HOURS = Array.from({length:12},(_,i)=>String(i+1).padStart(2,'0'));
+  const MINS  = Array.from({length:60},(_,i)=>String(i).padStart(2,'0'));
+  const AMPM  = ['AM','PM'];
+
+  const now = new Date();
+  let nowH = now.getHours();
+  const nowAmpm = nowH >= 12 ? 1 : 0;
+  nowH = nowH % 12 || 12;
+  const nowHIdx = nowH - 1;
+  const nowMIdx = now.getMinutes(); // exact minute
+
+  function makeObsPicker(colEl, values, initIdx) {
+    if (!colEl) return { getIdx: ()=>0 };
+    const list = document.createElement('div');
+    list.className = 'scroll-picker-list';
+    for (let p=0;p<PAD;p++){const g=document.createElement('div');g.className='scroll-picker-item';list.appendChild(g);}
+    values.forEach((v)=>{const item=document.createElement('div');item.className='scroll-picker-item';item.textContent=v;list.appendChild(item);});
+    for (let p=0;p<PAD;p++){const g=document.createElement('div');g.className='scroll-picker-item';list.appendChild(g);}
+    colEl.appendChild(list);
+
+    let currentIdx=initIdx, isDragging=false, startY=0, startOffset=0, lastY=0, lastT=0, velocity=0;
+    const allItems=()=>[...list.querySelectorAll('.scroll-picker-item')];
+    const getOffset=idx=>-idx*ITEM_H;
+
+    function setIdx(idx,animate){
+      idx=Math.max(0,Math.min(values.length-1,idx));
+      currentIdx=idx;
+      list.style.transition=animate?'transform 0.2s cubic-bezier(.25,.46,.45,.94)':'none';
+      list.style.transform=`translateY(${getOffset(idx)}px)`;
+      allItems().forEach((item,i)=>item.classList.toggle('selected',i-PAD===idx));
+    }
+    function onDown(e){isDragging=true;startY=lastY=e.touches?e.touches[0].clientY:e.clientY;lastT=Date.now();velocity=0;const m=new DOMMatrix(getComputedStyle(list).transform);startOffset=m.m42;list.style.transition='none';e.preventDefault();}
+    function onMove(e){if(!isDragging)return;const y=e.touches?e.touches[0].clientY:e.clientY;const dt=Date.now()-lastT;if(dt>0)velocity=(y-lastY)/dt*14;lastY=y;lastT=Date.now();const off=startOffset+(y-startY);list.style.transform=`translateY(${off}px)`;const ap=Math.max(0,Math.min(values.length-1,Math.round(-off/ITEM_H)));allItems().forEach((item,i)=>item.classList.toggle('selected',i-PAD===ap));e.preventDefault();}
+    function onUp(){if(!isDragging)return;isDragging=false;const m=new DOMMatrix(getComputedStyle(list).transform);setIdx(Math.round((-m.m42+velocity*6)/ITEM_H),true);}
+    colEl.addEventListener('mousedown',onDown);window.addEventListener('mousemove',onMove);window.addEventListener('mouseup',onUp);
+    colEl.addEventListener('touchstart',onDown,{passive:false});window.addEventListener('touchmove',onMove,{passive:false});window.addEventListener('touchend',onUp);
+    colEl.addEventListener('wheel',e=>{e.preventDefault();setIdx(currentIdx+(e.deltaY>0?1:-1),true);},{passive:false});
+    setIdx(initIdx,false);
+    return { getIdx: ()=>currentIdx };
+  }
+
+  const hPicker = makeObsPicker(document.getElementById('obs-hour-picker'), HOURS, nowHIdx);
+  const mPicker = makeObsPicker(document.getElementById('obs-min-picker'),  MINS,  nowMIdx);
+  const aPicker = makeObsPicker(document.getElementById('obs-ampm-picker'), AMPM,  nowAmpm);
+
+  window.getObsTime = () => {
+    return `${HOURS[hPicker.getIdx()]}:${MINS[mPicker.getIdx()]} ${AMPM[aPicker.getIdx()]}`;
+  };
+})();
+
+// ── PROFILE ───────────────────────────────────────
+let _username = localStorage.getItem('ws_username') || '';
+
+function _applyProfileUI() {
+  // Update avatar initials / photo
+  const initEl  = document.getElementById('avatar-initials');
+  const imgEl   = document.getElementById('avatar-img');
+  const dispEl  = document.getElementById('profile-username-display');
+  const savedPhoto = localStorage.getItem('ws_photo');
+
+  if (savedPhoto && imgEl) {
+    imgEl.src = savedPhoto;
+    imgEl.style.display = 'block';
+    if (initEl) initEl.style.display = 'none';
+  } else {
+    if (imgEl) imgEl.style.display = 'none';
+    if (initEl) initEl.style.display = '';
+    if (initEl) initEl.textContent = _username ? _username[0].toUpperCase() : '?';
+  }
+
+  // Username displayed below avatar
+  if (dispEl) {
+    dispEl.textContent = _username || '';
+    dispEl.style.display = _username ? '' : 'none';
+  }
+
+  // Pre-fill input
+  const input = document.getElementById('username-input');
+  if (input && _username) input.value = _username;
 }
-updateClock(); setInterval(updateClock,30000);
+
+function previewUsername(val) {
+  const initEl = document.getElementById('avatar-initials');
+  const imgEl  = document.getElementById('avatar-img');
+  // Only update initials if no photo
+  if (!localStorage.getItem('ws_photo')) {
+    if (initEl) initEl.textContent = val.trim() ? val.trim()[0].toUpperCase() : '?';
+  }
+  // Live-update the display name below avatar
+  const dispEl = document.getElementById('profile-username-display');
+  if (dispEl) { dispEl.textContent = val.trim(); dispEl.style.display = val.trim() ? '' : 'none'; }
+}
+
+function saveUsername() {
+  const input = document.getElementById('username-input');
+  const msg   = document.getElementById('username-saved-msg');
+  const val   = input ? input.value.trim() : '';
+  if (!val) { if(msg) { msg.textContent='Please enter a username.'; setTimeout(()=>msg.textContent='',2000); } return; }
+  _username = val;
+  localStorage.setItem('ws_username', val);
+  _applyProfileUI();
+  if (msg) { msg.textContent='Saved!'; setTimeout(()=>msg.textContent='',2000); }
+  showToast('Username saved!');
+}
+
+function handlePhotoUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    localStorage.setItem('ws_photo', e.target.result);
+    _applyProfileUI();
+    showToast('Photo updated!');
+  };
+  reader.readAsDataURL(file);
+}
+
+// Init profile on load
+(function(){
+  _applyProfileUI();
+  buildWidgetChooser();
+})();
 
 // ── TIMER ────────────────────────────────────────
 let _tSecs=0, _tGoal=30*60, _tRunning=false, _tInterval=null, _tBest=2*3600+48*60;
@@ -1579,11 +1806,11 @@ function buildTopSpots(){
 function buildLeaderboard(){
   const el=document.getElementById('leaderboard'); if(!el||el.children.length) return;
   const lb=[
-    {n:'Sophie M.', s:'312h · 12 spots', pts:'312h', av:'SM', me:false},
-    {n:'You',       s:'284h · streak 14',pts:'284h', av:'Me', me:true},
-    {n:'Amara K.',  s:'261h · 9 spots',  pts:'261h', av:'AK', me:false},
-    {n:'Ji-won L.', s:'248h · 11 spots', pts:'248h', av:'JL', me:false},
-    {n:'Priya R.',  s:'231h · 8 spots',  pts:'231h', av:'PR', me:false},
+    {n:'Sophie M.', s:'1312h · 12 spots', pts:'1312h', av:'SM', me:false},
+    {n:'You',       s:'847h · streak 14',pts:'847h', av:'Me', me:true},
+    {n:'Amara K.',  s:'826h · 9 spots',  pts:'826h', av:'AK', me:false},
+    {n:'Ji-won L.', s:'648h · 11 spots', pts:'648h', av:'JL', me:false},
+    {n:'Priya R.',  s:'631h · 8 spots',  pts:'631h', av:'PR', me:false},
   ];
   el.innerHTML=lb.map((r,i)=>`
     <div class="lb-row${r.me?' me':''}">
